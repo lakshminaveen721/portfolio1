@@ -1,0 +1,521 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lakshmi Naveen Reddy Molom - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Matrix Rain Effect */
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            z-index: -1;
+            background: #000;
+        }
+        .matrix-char {
+            position: absolute;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            opacity: 1;
+            text-shadow: 0 0 5px #0f0;
+            animation: rainfall linear infinite;
+        }
+        @keyframes rainfall {
+            0% { top: -20px; opacity: 1; }
+            20% { opacity: 0.8; }
+            40% { opacity: 0.6; }
+            60% { opacity: 0.4; }
+            80% { opacity: 0.2; }
+            100% { top: 100vh; opacity: 0; }
+        }
+
+        /* Header Animation */
+        .header-text {
+            font-family: 'Courier New', monospace;
+            font-size: 2.5rem;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+        }
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.8rem;
+            background: #0f0;
+            animation: blink 0.7s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Section Styling */
+        section {
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            scroll-margin-top: 80px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #0f0;
+        }
+        .experience-item {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s;
+        }
+        .experience-item:hover {
+            transform: translateY(-5px);
+        }
+        .skill-icon {
+            transition: transform 0.3s;
+        }
+        .skill-icon:hover {
+            transform: scale(1.2);
+        }
+        /* Ensure all text elements are green */
+        body, p, h1, h2, h3, a, li, input, textarea, button {
+            color: #0f0;
+        }
+        .text-gray-400 {
+            color: #0a8d0a;
+        }
+        .text-black {
+            color: #0f0;
+        }
+        a:hover {
+            color: #33ff33;
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <!-- Matrix Rain Effect -->
+    <div class="matrix-rain" id="matrix-rain"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full bg-black bg-opacity-80 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="header-text" id="header-text">LAKSHMI.DEV<span class="cursor"></span></div>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#home" class="hover:text-green-400 transition-colors">Home</a></li>
+                    <li><a href="#about" class="hover:text-green-400 transition-colors">About</a></li>
+                    <li><a href="#skills" class="hover:text-green-400 transition-colors">Skills</a></li>
+                    <li><a href="#experience" class="hover:text-green-400 transition-colors">Experience</a></li>
+                    <li><a href="#education" class="hover:text-green-400 transition-colors">Education</a></li>
+                    <li><a href="#projects" class="hover:text-green-400 transition-colors">Projects</a></li>
+                    <li><a href="#certificates" class="hover:text-green-400 transition-colors">Certificates</a></li>
+                    <li><a href="#contact" class="hover:text-green-400 transition-colors">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-32">
+        <!-- Home Section -->
+        <section id="home" class="flex items-center justify-center">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold mb-4">Welcome to My Portfolio</h1>
+                <p class="text-xl">Lakshmi Naveen Reddy Molom - Full Stack Developer</p>
+                <a href="resume.pdf" download="Lakshmi_Naveen_Reddy_Molom_Resume.pdf" class="mt-4 inline-block px-6 py-2 bg-green-400 text-black rounded hover:bg-green-500 transition-colors">Resume</a> <!-- Replace with actual resume file path or URL -->
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about">
+            <h2 class="text-3xl font-bold mb-8 text-center">About Me</h2>
+            <div class="flex items-center space-x-8 justify-center">
+                <img src="profile_image.jpg" alt="Profile" class="rounded-full w-72 h-72 object-cover"> <!-- Increased size to 72x72 -->
+                <div>
+                    <p class="text-lg">
+                        I'm Lakshmi Naveen Reddy Molom, a passionate Full Stack Developer with expertise in building
+                        scalable web applications. I specialize in modern technologies and have a strong foundation
+                        in both frontend and backend development. My goal is to create efficient, secure, and
+                        user-friendly solutions. "Turning code into magic, one line at a time! ✨"
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <h2 class="text-3xl font-bold mb-8 text-center">Skills</h2>
+            <div class="space-y-8">
+                <!-- Front End Skills -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Front End Skills</h3>
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center skill-icon"><i class="fab fa-html5 text-4xl text-green-400 mb-2"></i><p>HTML5</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-css3-alt text-4xl text-green-400 mb-2"></i><p>CSS3</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-js-square text-4xl text-green-400 mb-2"></i><p>JavaScript</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-js text-4xl text-green-400 mb-2"></i><p>TypeScript</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-react text-4xl text-green-400 mb-2"></i><p>React.js</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-react text-4xl text-green-400 mb-2"></i><p>Next.js</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-bootstrap text-4xl text-green-400 mb-2"></i><p>Bootstrap</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-mobile-alt text-4xl text-green-400 mb-2"></i><p>Responsive UI Design</p></div>
+                    </div>
+                </div>
+
+                <!-- Back End Skills -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Back End Skills</h3>
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center skill-icon"><i class="fab fa-java text-4xl text-green-400 mb-2"></i><p>Java</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-python text-4xl text-green-400 mb-2"></i><p>Python</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-code text-4xl text-green-400 mb-2"></i><p>C++</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-code text-4xl text-green-400 mb-2"></i><p>C#</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-php text-4xl text-green-400 mb-2"></i><p>PHP</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-node-js text-4xl text-green-400 mb-2"></i><p>Node.js</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-node text-4xl text-green-400 mb-2"></i><p>Express.js</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-leaf text-4xl text-green-400 mb-2"></i><p>Spring Boot</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-python text-4xl text-green-400 mb-2"></i><p>Django</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-server text-4xl text-green-400 mb-2"></i><p>FastAPI</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-server text-4xl text-green-400 mb-2"></i><p>REST API</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-terminal text-4xl text-green-400 mb-2"></i><p>Bash</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-terminal text-4xl text-green-400 mb-2"></i><p>Powershell</p></div>
+                    </div>
+                </div>
+
+                <!-- Database -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Database</h3>
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center skill-icon"><i class="fas fa-database text-4xl text-green-400 mb-2"></i><p>MySQL</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-database text-4xl text-green-400 mb-2"></i><p>SQL</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-database text-4xl text-green-400 mb-2"></i><p>MongoDB</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-database text-4xl text-green-400 mb-2"></i><p>PostgreSQL</p></div>
+                    </div>
+                </div>
+
+                <!-- Cloud -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Cloud</h3>
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center skill-icon"><i class="fab fa-aws text-4xl text-green-400 mb-2"></i><p>AWS (S3, EC2)</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-server text-4xl text-green-400 mb-2"></i><p>NGINX</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-cloud text-4xl text-green-400 mb-2"></i><p>Render</p></div>
+                    </div>
+                </div>
+
+                <!-- DevOps -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">DevOps</h3>
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center skill-icon"><i class="fab fa-docker text-4xl text-green-400 mb-2"></i><p>Docker</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-cubes text-4xl text-green-400 mb-2"></i><p>Kubernetes</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-git-alt text-4xl text-green-400 mb-2"></i><p>Git</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-gitlab text-4xl text-green-400 mb-2"></i><p>GitLab CI</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-github text-4xl text-green-400 mb-2"></i><p>GitHub Actions (CI/CD)</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-tools text-4xl text-green-400 mb-2"></i><p>Maven</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-clock text-4xl text-green-400 mb-2"></i><p>Cron Jobs</p></div>
+                    </div>
+                </div>
+
+                <!-- Others -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Others</h3>
+                    <div class="grid grid-cols-4 gap-6">
+                        <div class="text-center skill-icon"><i class="fas fa-code text-4xl text-green-400 mb-2"></i><p>Eclipse</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-vial text-4xl text-green-400 mb-2"></i><p>JUnit</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-microsoft text-4xl text-green-400 mb-2"></i><p>Visual Studio</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-tools text-4xl text-green-400 mb-2"></i><p>Postman</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-jira text-4xl text-green-400 mb-2"></i><p>Jira</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-fire text-4xl text-green-400 mb-2"></i><p>Spark</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-search text-4xl text-green-400 mb-2"></i><p>Splunk</p></div>
+                        <div class="text-center skill-icon"><i class="fab fa-linux text-4xl text-green-400 mb-2"></i><p>Linux</p></div>
+                        <div class="text-center skill-icon"><i class="fas fa-network-wired text-4xl text-green-400 mb-2"></i><p>Networking (TCP/IP, DNS)</p></div>
+                        <p>- Agile</p>
+                        <p>- Scrum</p>
+                        <p>- Agile Development</p>
+                        <p>- Algorithms</p>
+                        <p>- Code Review</p>
+                        <p>- REST API Design</p>
+                        <p>- Distributed Systems</p>
+                        <p>- Microsoft Suite</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience">
+            <h2 class="text-3xl font-bold mb-8 text-center">Experience</h2>
+            <div class="space-y-6">
+                <div class="experience-item">
+                    <h3 class="text-xl font-bold">Student Assistant (Software Engineer)</h3>
+                    <p class="text-gray-400">California State University, East Bay, Hayward, USA, Sep 2024 – May 2025</p>
+                    <ul class="list-disc list-inside">
+                        <li>Developed and deployed internal full-stack web applications using React.js, FastAPI, and PostgreSQL, improving faculty project tracking and student resource management while reducing manual workflows by 50%.</li>
+                        <li>Built scalable RESTful APIs and automated deployments with Docker and GitHub Actions, enhancing application performance and deployment consistency in a distributed development environment.</li>
+                    </ul>
+                </div>
+                <div class="experience-item">
+                    <h3 class="text-xl font-bold">IT Support Engineer</h3>
+                    <p class="text-gray-400">Chartwells Higher Education Dining Services, Hayward, USA, Jan 2024 – May 2025</p>
+                    <ul class="list-disc list-inside">
+                        <li>Diagnosed and resolved hardware, network, and software issues across POS and inventory systems, achieving a 98% resolution rate and minimizing service disruptions in campus dining locations.</li>
+                        <li>Automated repetitive support tasks like device provisioning and user access resets using Bash and PowerShell scripts, reducing ticket response time by 40%.</li>
+                        <li>Collaborated with backend teams to troubleshoot API and SQL-based sync failures between local terminals and cloud systems, improving system reliability and data accuracy by 25%.</li>
+                    </ul>
+                </div>
+                <div class="experience-item">
+                    <h3 class="text-xl font-bold">Software Engineer</h3>
+                    <p class="text-gray-400">Inventeron Technologies and Business Solutions LLP, Bengaluru, IN, Aug 2022 – Jul 2023</p>
+                    <ul class="list-disc list-inside">
+                        <li>Refactored and optimized 50+ REST APIs using Express.js and Node.js, reducing average response time by 20% and lowering server costs by 15% across three clusters.</li>
+                        <li>Built interactive dashboards with React.js and Chart.js to visualize sales trends, enabling data-driven inventory decisions that reduced excess stock by 15% and increased turnover rate by 10%.</li>
+                        <li>Automated server health checks and deployments using Shell scripts, cron jobs, and Docker on AWS, improving operational efficiency by 25% and ensuring consistent, scalable environments.</li>
+                    </ul>
+                </div>
+                <div class="experience-item">
+                    <h3 class="text-xl font-bold">Software Engineer Intern</h3>
+                    <p class="text-gray-400">Inventeron Technologies and Business Solutions LLP, Bengaluru, IN, May 2022 – Jul 2022</p>
+                    <ul class="list-disc list-inside">
+                        <li>Designed innovative data preprocessing workflows which enhanced the efficiency of cleaning and transforming large datasets exceeding 1 million rows using Pandas and NumPy, leading to accelerated insights generation.</li>
+                        <li>Automated machine learning model deployment with Kubernetes, achieving a 95% success rate in production deployments, and realized a 25% improvement in resource utilization while scaling to 1000+ nodes.</li>
+                        <li>Engineered and maintained CI/CD pipelines for automating model training and deployment with GitHub Actions and Kubernetes, streamlining the workflow and reducing deployment time by 30%.</li>
+                    </ul>
+                </div>
+                <div class="experience-item">
+                    <h3 class="text-xl font-bold">Freelance Web Developer</h3>
+                    <p class="text-gray-400">Self Employed, Bengaluru, IN, May 2020 – Aug 2021</p>
+                    <ul class="list-disc list-inside">
+                        <li>Delivered full-stack web applications for small businesses using React.js, Node.js, Django, PostgreSQL, Firebase, HTML5, CSS3, Bootstrap, TypeScript, and Spring Boot adapting quickly to varied tech requirements and timelines.</li>
+                        <li>Led the development of a real-time food ordering system for Gurukrupa Restaurant, enabling customers to place orders and track status live, while providing admins with a backend to manage menu and orders.</li>
+                        <li>Deployed full-stack solutions on Netlify and Render, integrating RESTful APIs and Firebase Realtime Database to deliver responsive UI/UX, seamless data sync, and complete project execution from architecture to client onboarding.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education">
+            <h2 class="text-3xl font-bold mb-8 text-center">Education</h2>
+            <div class="space-y-8">
+                <div class="flex items-center space-x-8">
+                    <img src="csueb_logo.jpg" alt="California State University, East Bay" class="w-48 h-48 object-cover rounded"> <!-- Replace with actual path or base64 -->
+                    <div>
+                        <h3 class="text-xl font-bold">Master's in Computer Science</h3>
+                        <p class="text-gray-400">California State University, East Bay, Hayward, USA, Aug 2023 – May 2025</p>
+                        <p>GPA: 3.8</p>
+                        <p class="mt-4">Relevant Courses:</p>
+                        <ul class="list-disc list-inside">
+                            <li>Data Structures and Advanced Algorithms</li>
+                            <li>Operating System Design</li>
+                            <li>Web Systems</li>
+                            <li>Cloud Computing</li>
+                            <li>Advanced Computer Networks</li>
+                            <li>Cybersecurity</li>
+                            <li>Artificial Intelligence</li>
+                            <li>System Design</li>
+                            <li>Machine Learning</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-8">
+                    <img src="vtu_logo.jpg" alt="VTU" class="w-48 h-48 object-cover rounded"> <!-- Replace with actual path or base64 -->
+                    <div>
+                        <h3 class="text-xl font-bold">Bachelor's of Engineering</h3>
+                        <p class="text-gray-400">VTU, Bengaluru, IN, Aug 2018 – May 2022</p>
+                        <p>GPA: 3.8</p>
+                        <p class="mt-4">Relevant Courses:</p>
+                        <ul class="list-disc list-inside">
+                            <li>Data Structures and Algorithms</li>
+                            <li>Database Management Systems</li>
+                            <li>Web Development</li>
+                            <li>Operating Systems</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <h2 class="text-3xl font-bold mb-8 text-center">Projects</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="p-4 bg-gray-900 rounded-lg">
+                    <h3 class="text-xl font-bold">Mini Netflix Clone</h3>
+                    <p>Full-stack streaming platform with user auth, React frontend, and MongoDB backend.</p>
+                    <a href="https://github.com/lakshminaveen721/Mini-Netflix-Clone---Full-Stack-Streaming-Platform" class="text-green-400 hover:underline">View on GitHub</a>
+                </div>
+                <div class="p-4 bg-gray-900 rounded-lg">
+                    <h3 class="text-xl font-bold">Real-Time Object Detection</h3>
+                    <p>YOLOv5-based live object detection with FastAPI and OpenCV, containerized with Docker.</p>
+                    <a href="https://github.com/lakshminaveen721/Real-time-Object-Detection-and-Tracking" class="text-green-400 hover:underline">View on GitHub</a>
+                </div>
+                <div class="p-4 bg-gray-900 rounded-lg">
+                    <h3 class="text-xl font-bold">Encrypted P2P File Sharing</h3>
+                    <p>Secure file exchange system using FastAPI, AES encryption, and peer-to-peer sockets.</p>
+                    <a href="https://github.com/lakshminaveen721/EncryptedP2PWebAppFastAPI" class="text-green-400 hover:underline">View on GitHub</a>
+                </div>
+                <div class="p-4 bg-gray-900 rounded-lg">
+                    <h3 class="text-xl font-bold">Distributed Logging System</h3>
+                    <p>Real-time log collector using Kafka, Redis, FastAPI, WebSockets, and Docker.</p>
+                    <a href="https://github.com/lakshminaveen721/distrubuted-logging-system" class="text-green-400 hover:underline">View on GitHub</a>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <p class="text-lg">Explore more projects on my GitHub!</p>
+                <a href="https://github.com/lakshmaneereddy21" class="text-green-400 hover:text-green-500 underline">https://github.com/lakshmaneereddy21</a>
+            </div>
+        </section>
+
+        <!-- Certificates Section -->
+        <section id="certificates">
+            <h2 class="text-3xl font-bold mb-8 text-center">Certificates</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="p-4 bg-gray-900 rounded-lg">
+                    <h3 class="text-xl font-bold">Python for Everybody Specialization</h3>
+                    <p class="text-gray-400">Coursera, Issued May 2023</p>
+                    <p>Completed comprehensive course on Python programming fundamentals.</p>
+                </div>
+                <div class="p-4 bg-gray-900 rounded-lg">
+                    <h3 class="text-xl font-bold">Google IT Support Professional Certificate</h3>
+                    <p class="text-gray-400">Coursera, Issued Oct 2022</p>
+                    <p>Mastered IT support skills including troubleshooting and customer service.</p>
+                </div>
+                <div class="p-4 bg-gray-900 rounded-lg">
+                    <h3 class="text-xl font-bold">AWS Certified Cloud Practitioner</h3>
+                    <p class="text-gray-400">Amazon Web Services (AWS), Issued Aug 2022</p>
+                    <p>Gained foundational knowledge of AWS cloud services and architecture.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <h2 class="text-3xl font-bold mb-8 text-center">Contact Me</h2>
+            <div class="max-w-md mx-auto">
+                <div class="space-y-4">
+                    <input type="text" placeholder="Name" class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none">
+                    <input type="email" placeholder="Email" class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none">
+                    <textarea placeholder="Message" rows="5" class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none"></textarea>
+                    <button class="w-full p-3 bg-green-400 text-black rounded hover:bg-green-500 transition-colors">Send</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-6 text-center">
+        <div class="flex justify-center space-x-6 mb-4">
+            <a href="https://linkedin.com/in/lakshmaneereddy1270" class="text-green-400 hover:text-green-500"><i class="fab fa-linkedin text-2xl"></i></a>
+            <a href="mailto:lakshmireddy1270@gmail.com" class="text-green-400 hover:text-green-500"><i class="fas fa-envelope text-2xl"></i></a>
+            <a href="https://github.com/lakshmaneereddy21" class="text-green-400 hover:text-green-500"><i class="fab fa-github text-2xl"></i></a>
+        </div>
+        <p class="text-gray-400">Created by Naveen</p>
+    </footer>
+
+    <script>
+        // Matrix Rain Animation
+        function createMatrixRain() {
+            const container = document.getElementById('matrix-rain');
+            const chars = '01'; // Only 0's and 1's
+            const fontSize = 14;
+            const columns = window.innerWidth / fontSize;
+            const charSpeed = 4; // Increased speed
+
+            for (let i = 0; i < columns; i++) {
+                setInterval(() => createChar(i), 200); // Increased interval for less density
+            }
+
+            function createChar(col) {
+                const char = document.createElement('div');
+                char.className = 'matrix-char';
+                char.innerText = chars.charAt(Math.floor(Math.random() * chars.length));
+                char.style.left = col * fontSize + 'px';
+                char.style.animationDuration = (Math.random() * 2 + 3) / charSpeed + 's'; // Faster fall with variation
+                container.appendChild(char);
+
+                char.addEventListener('animationend', () => {
+                    char.remove();
+                });
+            }
+        }
+
+        createMatrixRain();
+
+        // Header Text Animation (Continuous)
+        const headerText = document.getElementById('header-text');
+        const text = 'LAKSHMI.DEV';
+        let index = 0;
+        let isDeleting = false;
+
+        function type() {
+            if (!isDeleting && index < text.length) {
+                headerText.innerHTML = text.slice(0, index + 1) + '<span class="cursor"></span>';
+                index++;
+                setTimeout(type, 200);
+            } else if (isDeleting && index >= 0) {
+                headerText.innerHTML = text.slice(0, index) + '<span class="cursor"></span>';
+                index--;
+                setTimeout(type, 100);
+            } else if (index === text.length) {
+                isDeleting = true;
+                setTimeout(type, 1000); // Pause before deleting
+            } else if (index < 0) {
+                isDeleting = false;
+                setTimeout(type, 500); // Pause before typing again
+            }
+        }
+
+        type();
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
