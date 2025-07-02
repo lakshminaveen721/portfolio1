@@ -440,16 +440,30 @@
 
         <!-- Contact Section -->
         <section id="contact">
-            <h2 class="text-3xl font-bold mb-8 text-center">Contact Me</h2>
-            <div class="max-w-md mx-auto">
-                <div class="space-y-4">
-                    <input type="text" placeholder="Name" class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none">
-                    <input type="email" placeholder="Email" class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none">
-                    <textarea placeholder="Message" rows="5" class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none"></textarea>
-                    <button class="w-full p-3 bg-green-400 text-black rounded hover:bg-green-500 transition-colors">Send</button>
-                </div>
-            </div>
-        </section>
+          <h2 class="text-3xl font-bold mb-8 text-center">Contact Me</h2>
+          <div class="max-w-md mx-auto">
+            <form action="mailto:mlakshmireddy1270@gmail.com" method="POST" enctype="text/plain" class="space-y-4">
+      <input
+        type="text"
+        name="Name"
+        placeholder="Name"
+        class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none">
+      <input
+        type="email"
+        name="Email"
+        placeholder="Email"
+        class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none">
+      <textarea
+        name="Message"
+        placeholder="Message"
+        rows="5"
+        class="w-full p-3 bg-gray-900 rounded border border-gray-700 focus:border-green-400 outline-none"></textarea>
+      <button
+        type="submit"
+        class="w-full p-3 bg-green-400 text-black rounded hover:bg-green-500 transition-colors">Send</button>
+    </form>
+  </div>
+</section>
     </main>
 
     <!-- Footer -->
